@@ -3,6 +3,8 @@ use std::borrow::Cow;
 use derive_more::{Eq, PartialEq};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", rename_all = "kebab-case")]
 pub enum MessageKind {
     Info,
     Warning,
@@ -23,9 +25,11 @@ pub enum MessageKind {
 /// Next to [`Self::new`] and [`Self::cnew`] (for const) there
 /// are also utility constructors for every kind.
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Message<Level> {
     kind: MessageKind,
     msg: Cow<'static, str>,
+    #[cfg_attr(feature = "serde", serde(skip))]
     phantom: std::marker::PhantomData<Level>,
 }
 

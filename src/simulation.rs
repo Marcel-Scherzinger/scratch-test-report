@@ -12,6 +12,7 @@ use crate::{Text, messages::Messages};
 /// Each simulation consists of multiple [categories](Category) that group
 /// similar [`TestCase`]s
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Simulation {
     /// Messages that apply to the whole simulation-part of a report.
     /// This could for example be a missing data structure in the code
@@ -22,12 +23,15 @@ pub struct Simulation {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CategoryStatus {
     complete_success: usize,
     success_but_warnings: usize,
     failure: usize,
 }
 #[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", rename_all = "kebab-case")]
 pub enum TestCaseStatus {
     CompleteSucess,
     SuccessButWarnings,
@@ -35,6 +39,7 @@ pub enum TestCaseStatus {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Category {
     /// An optional description giving a hint on what the contained
     /// test cases have in common i. e. what property they test
@@ -52,6 +57,8 @@ pub struct Category {
 /// Encodes what a test checked and what is the difference between expected and
 /// received results
 #[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", rename_all = "kebab-case")]
 pub enum TestCriterion {
     /// The last line the program output should have an `expected` value.
     /// Any other (slightly different) value will be counted as failure.
@@ -72,6 +79,7 @@ pub enum TestCriterion {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TestCase {
     /// If the test:
     /// - [succeeded entirely](TestCaseStatus::CompleteSucess)
@@ -100,7 +108,8 @@ pub struct TestCase {
 }
 
 /// Results of linting that is performed on test case level
-#[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[derive(Debug, PartialEq, PartialOrd, Clone, Getters, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TestCaseLints {
     /// The test succeeded (with or without warnings) when running
     /// it with initially empty lists and variables, but failed
@@ -110,6 +119,7 @@ pub struct TestCaseLints {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TestCaseLintUninitialized {
     /// An initial setting of variables and lists that lets the
     /// program misbehave even if it worked well for clean state
@@ -117,6 +127,7 @@ pub struct TestCaseLintUninitialized {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ActionsState {
     output: Vec<SValue>,
     lists: Option<BTreeMap<Text, Vec<SValue>>>,
@@ -124,6 +135,7 @@ pub struct ActionsState {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct DataStorage {
     lists: BTreeMap<Text, Vec<SValue>>,
     variables: BTreeMap<Text, SValue>,

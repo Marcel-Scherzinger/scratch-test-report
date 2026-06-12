@@ -6,7 +6,11 @@ edition = "2024"
 [dependencies]
 derive-getters = "0.5.0"
 derive_more = { version = "2.1.1", features = ["eq"] }
+serde = { version = "1.0", features=["derive"], optional = true }
 
 [dependencies.svalue]
 git = "https://github.com/Marcel-Scherzinger/scratch-test-value"
 package = "scratch-test-value"
+
+[features]
+serde = ["dep:serde", "svalue/serde"]

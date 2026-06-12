@@ -16,7 +16,9 @@ pub trait MessageAdder<Level> {
 
 /// Collection of multiple messages of a level
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Messages<Level> {
+    #[cfg_attr(feature = "serde", serde(flatten))]
     messages: BTreeSet<Message<Level>>,
 }
 

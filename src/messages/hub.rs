@@ -22,6 +22,14 @@ pub struct Messages<Level> {
     messages: BTreeSet<Message<Level>>,
 }
 
+impl<Level> Default for Messages<Level> {
+    fn default() -> Self {
+        Self {
+            messages: Default::default(),
+        }
+    }
+}
+
 impl<Level> Messages<Level> {
     pub fn iter(&self) -> std::collections::btree_set::Iter<'_, Message<Level>> {
         self.messages.iter()

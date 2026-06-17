@@ -6,6 +6,11 @@ pub mod simulation;
 
 pub use report_creation::ReportGenerator;
 
+use crate::{
+    messages::Messages,
+    simulation::{Category, Simulation, TestCase},
+};
+
 pub type Text = std::borrow::Cow<'static, str>;
 
 pub mod prelude {
@@ -19,3 +24,7 @@ pub mod prelude {
 fn is_default<T: Default + PartialEq>(t: &T) -> bool {
     t == &T::default()
 }
+
+pub(crate) type SimulationBLevelMessages = Messages<Simulation>;
+pub(crate) type CategoryBLevelMessages = (Messages<Category>, SimulationBLevelMessages);
+pub(crate) type CaseLevelBMessages = (Messages<TestCase>, CategoryBLevelMessages);

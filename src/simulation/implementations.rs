@@ -1,38 +1,30 @@
-use svalue::SNumber;
-
-use crate::messages::MessageAdder;
+use crate::{merge_parts_of_level::MergePartsOfLevel, messages::MessageAdder};
 
 use super::*;
 
 impl Simulation {
-    pub fn add_category(&mut self, category: Category) -> &mut Self {
+    pub fn new() -> Self {
+        Self {
+            messages: Default::default(),
+            categories: Default::default(),
+            analysis: Default::default(),
+        }
+    }
+    pub fn add_category(&mut self, category_builder: CategoryBuilder) -> &mut Self {
+        let (category, messages, extra) = category_builder.build();
+        self.messages.merge_parts_ref(messages);
+        if let Some(analysis) = extra {
+            self.analysis.merge_parts_ref(analysis);
+        }
         self.categories.push(category);
         self
     }
-}
-
-impl Category {
-    pub fn compute_from(description: Option<impl Into<Text>>, cases: Vec<TestCase>) -> Category {
-        let description = description.map(Into::into);
-        let (mut success, mut with_warn, mut fail) = (0, 0, 0);
-
-        for case in cases.iter() {
-            match case.status() {
-                TestCaseStatus::Failure => fail += 1,
-                TestCaseStatus::SuccessButWarnings => with_warn += 1,
-                TestCaseStatus::CompleteSucess => success += 1,
-            }
-        }
-
-        Category {
-            description,
-            status: CategoryStatus {
-                complete_success: success,
-                success_but_warnings: with_warn,
-                failure: fail,
-            },
-            cases,
-        }
+    pub fn with_category(mut self, category_builder: CategoryBuilder) -> Self {
+        self.add_category(category_builder);
+        self
+    }
+    pub fn verbalize(&mut self) {
+        self.analysis.verbalize_uninitialized(&mut self.messages);
     }
 }
 
@@ -42,49 +34,18 @@ impl MessageAdder<Simulation> for Simulation {
     }
 }
 
-impl TestCase {
-    pub fn new(
-        status: TestCaseStatus,
-        inputs: Vec<SValue>,
-        randoms: Option<Vec<SNumber>>,
-        received: ActionsState,
-        criterion: Option<TestCriterion>,
-    ) -> Self {
-        Self {
-            status,
-            inputs,
-            randoms,
-            received,
-            criterion,
-        }
+impl<'a, I: Iterator<Item = (&'a sinterpreter::OutputKind, &'a svalue::SValue)>> From<I>
+    for ActionsState
+{
+    fn from(value: I) -> Self {
+        Self::new_output(value.map(|(_, o)| o.clone()).collect())
     }
 }
 
-impl ActionsState {
-    pub fn new(output: impl Into<Vec<SValue>>) -> Self {
-        Self::from_parts(output.into(), None, None)
-    }
-    pub fn from_parts(
-        output: Vec<SValue>,
-        lists: Option<BTreeMap<Text, Vec<SValue>>>,
-        variables: Option<BTreeMap<Text, SValue>>,
+impl<'a> FromIterator<(&'a sinterpreter::OutputKind, &'a svalue::SValue)> for ActionsState {
+    fn from_iter<T: IntoIterator<Item = (&'a sinterpreter::OutputKind, &'a svalue::SValue)>>(
+        iter: T,
     ) -> Self {
-        Self {
-            output,
-            lists,
-            variables,
-        }
-    }
-    pub fn set_variable(&mut self, name: Text, value: impl Into<SValue>) -> &mut Self {
-        self.variables
-            .get_or_insert_default()
-            .insert(name, value.into());
-        self
-    }
-    pub fn set_list(&mut self, name: Text, value: impl Into<Vec<SValue>>) -> &mut Self {
-        self.lists
-            .get_or_insert_default()
-            .insert(name, value.into());
-        self
+        Self::from(iter.into_iter())
     }
 }

@@ -6,14 +6,15 @@ use std::collections::BTreeSet;
 
 use derive_getters::Getters;
 use either::Either;
-use sinterpreter::{RunError, default_state::DefaultStateError};
 use smodel::attrs::{List, Variable};
 use svalue::{SNumber, SValue};
 
 use crate::{
     CaseLevelBMessages,
     messages::{Message, Messages},
-    simulation::{ActionsState, Simulation, TestCaseStatus, TestCriterion},
+    simulation::{
+        ActionsState, Simulation, TestCaseStatus, TestCriterion, error_transform::RunningError,
+    },
 };
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
@@ -30,6 +31,10 @@ pub struct TestCase {
     ///
     /// **TODO**: Decide if this can also contain randoms that would have been
     /// provided but weren't needed due to unexpected program behaviour
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "crate::is_default")
+    )]
     randoms: Option<Vec<svalue::SNumber>>,
     /// The state (outputs, data) the program produced/wrote while running.
     ///
@@ -43,8 +48,20 @@ pub struct TestCase {
     ///
     /// Should *always* exist for failed tests and tests with warnings.
     /// This _could_ exist on successful tests as well!
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "crate::is_default")
+    )]
     criterion: Option<TestCriterion>,
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "crate::is_default")
+    )]
     error_code: Option<RunningError>,
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "crate::is_default")
+    )]
     messages: Messages<TestCase>,
 }
 
@@ -68,6 +85,7 @@ pub struct TestCaseBuilder<S> {
 
 /// Results of linting that is performed on test case level
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct RunAnalysis {
     hardcoding: Option<Result<(), Message<Simulation>>>,
     uninitialized_data: BTreeSet<Either<Variable, List>>,

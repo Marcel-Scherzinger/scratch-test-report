@@ -7,6 +7,10 @@ use crate::{messages::Messages, simulation::Simulation};
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Report {
     /// Messages for the whole report
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "crate::is_default")
+    )]
     messages: Messages<Report>,
     form: Option<Formality>,
     simulation: Option<Simulation>,

@@ -17,6 +17,10 @@ pub struct Category {
     /// test cases have in common i. e. what property they test
     description: Option<Text>,
     status: CategoryStatus,
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "crate::is_default")
+    )]
     messages: Messages<Category>,
     /// All test cases of this category
     cases: Vec<TestCase>,

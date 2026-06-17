@@ -4,11 +4,12 @@ use crate::Text;
 /// received results
 #[derive(Debug, PartialEq, PartialOrd, Clone)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case", tag = "type"))]
 #[allow(clippy::enum_variant_names)]
 pub enum TestCriterion {
     /// The last line the program output should have an `expected` value.
     /// Any other (slightly different) value will be counted as failure.
+    #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
     LastOutputExact {
         expected: Text,
         output_matches: Option<bool>,
@@ -17,6 +18,7 @@ pub enum TestCriterion {
     /// for. This value could be formatted in different ways so a special layer
     /// was used to extract the needed parts and interpret what the decision is.
     /// This layer could guess wrongly.
+    #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
     LastOutputInterpreted {
         /// One example that would have leaded to the expected interpretation.
         /// This can be shown to the user for comparison
@@ -29,6 +31,7 @@ pub enum TestCriterion {
     },
     /// The last line the program output should contain an `expected` value.
     /// Any other value not containing this will be counted as failure.
+    #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
     LastOutputContains {
         /// One example that contains the expected content.
         /// This can be shown to the user for comparison

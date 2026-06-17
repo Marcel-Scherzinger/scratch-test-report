@@ -30,4 +30,4 @@ git = "https://github.com/Marcel-Scherzinger/scratch-test-graph-analysis"
 package = "scratch-test-graph-analysis"
 
 [features]
-serde = ["dep:serde", "svalue/serde"]
+serde = ["dep:serde", "svalue/serde", "sinterpreter/serde", "either/serde"]

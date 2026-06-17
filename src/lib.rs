@@ -1,7 +1,10 @@
 mod merge_parts_of_level;
 pub mod messages;
 pub mod report;
+mod report_creation;
 pub mod simulation;
+
+pub use report_creation::ReportGenerator;
 
 pub type Text = std::borrow::Cow<'static, str>;
 

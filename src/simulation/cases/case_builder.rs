@@ -7,10 +7,11 @@ use svalue::{SNumber, SValue};
 
 use crate::{
     CategoryBLevelMessages, Text,
-    messages::{Message, MessageKind},
+    messages::{Message, MessageAdder, MessageKind},
     simulation::{
-        ActionsState, CaseBuilderStatusSet, CaseBuilderUnspecifiedStatus, TestCase,
-        TestCaseBuilder, TestCaseStatus, TestCriterion, cases::RunAnalysis,
+        ActionsState, CaseBuilderStatusSet, CaseBuilderUnspecifiedStatus, Category, Simulation,
+        TestCase, TestCaseBuilder, TestCaseStatus, TestCriterion, cases::RunAnalysis,
+        error_transform::RunningError,
     },
 };
 
@@ -33,6 +34,24 @@ impl TestCaseBuilder<CaseBuilderStatusSet> {
 impl From<TestCaseBuilder<CaseBuilderUnspecifiedStatus>> for TestCaseBuilder<CaseBuilderStatusSet> {
     fn from(value: TestCaseBuilder<CaseBuilderUnspecifiedStatus>) -> Self {
         value.derived_status()
+    }
+}
+
+impl<S> MessageAdder<TestCase> for TestCaseBuilder<S> {
+    fn notify(&mut self, msg: Message<TestCase>) {
+        self.messages.0.notify(msg);
+    }
+}
+
+impl<S> MessageAdder<Category> for TestCaseBuilder<S> {
+    fn notify(&mut self, msg: Message<Category>) {
+        self.messages.1.0.notify(msg);
+    }
+}
+
+impl<S> MessageAdder<Simulation> for TestCaseBuilder<S> {
+    fn notify(&mut self, msg: Message<Simulation>) {
+        self.messages.1.1.notify(msg);
     }
 }
 

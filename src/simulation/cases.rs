@@ -1,2 +1,74 @@
+mod case;
+mod case_builder;
 mod run_analysis;
 
+use std::collections::BTreeSet;
+
+use derive_getters::Getters;
+use either::Either;
+use sinterpreter::{RunError, default_state::DefaultStateError};
+use smodel::attrs::{List, Variable};
+use svalue::{SNumber, SValue};
+
+use crate::{
+    CaseLevelBMessages,
+    messages::{Message, Messages},
+    simulation::{ActionsState, Simulation, TestCaseStatus, TestCriterion},
+};
+
+#[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct TestCase {
+    /// If the test:
+    /// - [succeeded entirely](TestCaseStatus::CompleteSucess)
+    /// - [succeeded but produced warnings](TestCaseStatus::SuccessButWarnings)
+    /// - [failed](TestCaseStatus::Failure)
+    status: TestCaseStatus,
+    /// The inputs the program got
+    inputs: Vec<svalue::SValue>,
+    /// The random numbers the program got on request,
+    ///
+    /// **TODO**: Decide if this can also contain randoms that would have been
+    /// provided but weren't needed due to unexpected program behaviour
+    randoms: Option<Vec<svalue::SNumber>>,
+    /// The state (outputs, data) the program produced/wrote while running.
+    ///
+    /// - Outputs
+    /// - Lists
+    /// - Varaibles
+    received: ActionsState,
+    /// The difference between expected and received results.
+    /// This describes the reason why a program output/data has a value
+    /// that caused the test case to fail.
+    ///
+    /// Should *always* exist for failed tests and tests with warnings.
+    /// This _could_ exist on successful tests as well!
+    criterion: Option<TestCriterion>,
+    error_code: Option<RunError<DefaultStateError>>,
+    messages: Messages<TestCase>,
+}
+
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
+pub struct CaseBuilderUnspecifiedStatus;
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
+pub struct CaseBuilderStatusSet;
+
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
+pub struct TestCaseBuilder<S> {
+    status: TestCaseStatus,
+    inputs: Vec<SValue>,
+    randoms: Option<Vec<SNumber>>,
+    received: ActionsState,
+    error_code: Option<RunError<DefaultStateError>>,
+    criterion: Option<TestCriterion>,
+    analysis: RunAnalysis,
+    messages: CaseLevelBMessages,
+    phantom: std::marker::PhantomData<S>,
+}
+
+/// Results of linting that is performed on test case level
+#[derive(Debug, PartialEq, PartialOrd, Clone, Getters, Default)]
+pub struct RunAnalysis {
+    hardcoding: Option<Result<(), Message<Simulation>>>,
+    uninitialized_data: BTreeSet<Either<Variable, List>>,
+}

@@ -4,7 +4,7 @@ use derive_more::{Eq, PartialEq};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[cfg_attr(feature = "serde", rename_all = "kebab-case")]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub enum MessageKind {
     Info,
     Warning,
@@ -73,6 +73,13 @@ impl<Level> Message<Level> {
     }
     pub fn msg(&self) -> &str {
         self.msg.as_ref()
+    }
+    pub fn change_level<L>(self) -> Message<L> {
+        Message {
+            kind: self.kind,
+            msg: self.msg,
+            phantom: std::marker::PhantomData {},
+        }
     }
 }
 

@@ -44,7 +44,7 @@ pub struct TestCase {
     /// Should *always* exist for failed tests and tests with warnings.
     /// This _could_ exist on successful tests as well!
     criterion: Option<TestCriterion>,
-    error_code: Option<RunError<DefaultStateError>>,
+    error_code: Option<RunningError>,
     messages: Messages<TestCase>,
 }
 
@@ -59,7 +59,7 @@ pub struct TestCaseBuilder<S> {
     inputs: Vec<SValue>,
     randoms: Option<Vec<SNumber>>,
     received: ActionsState,
-    error_code: Option<RunError<DefaultStateError>>,
+    error_code: Option<RunningError>,
     criterion: Option<TestCriterion>,
     analysis: RunAnalysis,
     messages: CaseLevelBMessages,

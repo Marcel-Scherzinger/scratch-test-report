@@ -128,7 +128,7 @@ impl<S> TestCaseBuilder<S> {
         self
     }
     pub fn error_code(&mut self, error_code: Option<RunError<DefaultStateError>>) -> &mut Self {
-        self.error_code = error_code;
+        self.error_code = error_code.and_then(RunningError::from_interpreter_error);
         self
     }
 

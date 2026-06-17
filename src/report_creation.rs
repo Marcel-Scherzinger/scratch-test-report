@@ -3,7 +3,7 @@ use smodel::{
     blocks::{BlockKindUnit, EventBlockKindUnit},
 };
 
-use crate::report::{Formality, InitialBlockAmbiguity};
+use crate::report::{Formality, InitialBlockAmbiguity, MaxBlocksExceeded};
 
 const GREEN_FLAG: BlockKindUnit = BlockKindUnit::Event(EventBlockKindUnit::EventWhenflagclicked);
 
@@ -27,13 +27,31 @@ pub trait ReportGenerator {
         doc: &ProjectDoc,
     ) -> crate::simulation::Simulation;
 
+    fn max_allowed_total_block_number(&self) -> Option<usize> {
+        None
+    }
+
+    fn form_check_max_total_blocks(&self, doc: &ProjectDoc) -> Result<(), MaxBlocksExceeded> {
+        if let Some(allowed) = self.max_allowed_total_block_number() {
+            let used = doc.targets().iter().flat_map(|t| t.blocks().iter()).count();
+            if used > allowed {
+                Err(MaxBlocksExceeded::new(used, allowed))
+            } else {
+                Ok(())
+            }
+        } else {
+            Ok(())
+        }
+    }
+
     fn create_formality<'a>(&self, doc: &'a ProjectDoc) -> (Option<&'a smodel::Id>, Formality) {
         let initial_block = self.form_find_initial_block(doc);
         let cyclic_graph = self.form_is_cyclic_graph(doc);
         let block_ref = initial_block.clone().ok();
+        let max_total_blocks = self.form_check_max_total_blocks(doc);
         (
             block_ref,
-            Formality::new(initial_block.cloned(), cyclic_graph),
+            Formality::new(initial_block.cloned(), cyclic_graph, max_total_blocks),
         )
     }
 

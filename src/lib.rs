@@ -15,7 +15,11 @@ pub type Text = std::borrow::Cow<'static, str>;
 
 pub mod prelude {
     // make `notify` method available without extra import
+    pub use crate::ReportGenerator;
+    pub use crate::messages::Message;
     pub use crate::messages::MessageAdder as _;
+    pub use crate::report::{Formality, Report};
+    pub use crate::simulation::*;
 }
 
 #[allow(unused)]

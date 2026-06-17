@@ -6,11 +6,28 @@ edition = "2024"
 [dependencies]
 derive-getters = "0.5.0"
 derive_more = { version = "2.1.1", features = ["eq"] }
+either = "1.16.0"
+itertools = "0.14.0"
+log = "0.4.32"
+pastey = "0.2.3"
 serde = { version = "1.0", features=["derive"], optional = true }
+thiserror = "2.0.18"
 
 [dependencies.svalue]
 git = "https://github.com/Marcel-Scherzinger/scratch-test-value"
 package = "scratch-test-value"
+
+[dependencies.smodel]
+git = "https://github.com/Marcel-Scherzinger/scratch-test-model"
+package = "scratch-test-model"
+
+[dependencies.sinterpreter]
+git = "https://github.com/Marcel-Scherzinger/scratch-test-interpreter"
+package = "scratch-test-interpreter"
+
+[dependencies.sgraph]
+git = "https://github.com/Marcel-Scherzinger/scratch-test-graph-analysis"
+package = "scratch-test-graph-analysis"
 
 [features]
 serde = ["dep:serde", "svalue/serde"]

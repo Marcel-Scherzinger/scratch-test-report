@@ -12,6 +12,7 @@ use crate::{
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct Category {
     /// An optional description giving a hint on what the contained
     /// test cases have in common i. e. what property they test

@@ -35,6 +35,7 @@ pub struct Simulation {
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct CategoryStatus {
     complete_success: usize,
     success_but_warnings: usize,

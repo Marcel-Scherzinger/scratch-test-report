@@ -2,7 +2,10 @@ use std::collections::BTreeSet;
 
 use derive_more::{Eq, PartialEq};
 
-use crate::{merge_parts_of_level::MergePartsOfLevel, messages::msg::Message};
+use crate::{
+    merge_parts_of_level::MergePartsOfLevel,
+    messages::{MessageKind, msg::Message},
+};
 
 pub trait MessageAdder<Level> {
     fn notify(&mut self, msg: Message<Level>);
@@ -20,6 +23,12 @@ pub trait MessageAdder<Level> {
 pub struct Messages<Level> {
     #[cfg_attr(feature = "serde", serde(flatten))]
     messages: BTreeSet<Message<Level>>,
+}
+
+impl<Level> Messages<Level> {
+    pub fn has_kind(&self, kind: &MessageKind) -> bool {
+        self.iter().any(|m| m.kind() == kind)
+    }
 }
 
 impl<Level> Default for Messages<Level> {

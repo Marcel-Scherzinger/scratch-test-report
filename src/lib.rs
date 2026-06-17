@@ -9,3 +9,10 @@ pub mod prelude {
     // make `notify` method available without extra import
     pub use crate::messages::MessageAdder as _;
 }
+
+#[allow(unused)]
+/// This is used by `serde` for checking if values should be
+/// serialized. This is not detected but still used and needed.
+fn is_default<T: Default + PartialEq>(t: &T) -> bool {
+    t == &T::default()
+}

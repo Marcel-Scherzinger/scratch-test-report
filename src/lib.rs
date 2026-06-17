@@ -1,3 +1,4 @@
+mod merge_parts_of_level;
 pub mod messages;
 pub mod report;
 pub mod simulation;

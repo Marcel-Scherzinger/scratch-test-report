@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 
 use derive_more::{Eq, PartialEq};
 
-use crate::messages::msg::Message;
+use crate::{merge_parts_of_level::MergePartsOfLevel, messages::msg::Message};
 
 pub trait MessageAdder<Level> {
     fn notify(&mut self, msg: Message<Level>);
@@ -56,5 +56,12 @@ impl<Level> IntoIterator for Messages<Level> {
 
     fn into_iter(self) -> Self::IntoIter {
         self.messages.into_iter()
+    }
+}
+
+impl<Level> MergePartsOfLevel for Messages<Level> {
+    fn merge_parts_ref(&mut self, other: Self) -> &mut Self {
+        self.extend(other);
+        self
     }
 }

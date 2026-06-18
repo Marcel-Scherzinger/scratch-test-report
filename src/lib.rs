@@ -31,6 +31,12 @@ impl From<String> for Text {
     }
 }
 
+impl From<&'static str> for Text {
+    fn from(value: &'static str) -> Self {
+        Self(value.into())
+    }
+}
+
 pub mod prelude {
     // make `notify` method available without extra import
     pub use crate::ReportGenerator;

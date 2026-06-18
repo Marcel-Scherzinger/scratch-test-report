@@ -1,3 +1,6 @@
+use std::{collections::BTreeMap, fmt::Debug, ops::Deref};
+
+use itertools::Itertools;
 use smodel::{
     ProjectDoc,
     blocks::{BlockKindUnit, EventBlockKindUnit},
@@ -81,5 +84,62 @@ pub trait ReportGenerator {
         } else {
             first.ok_or(InitialBlockAmbiguity::No)
         }
+    }
+}
+
+#[derive(Default)]
+pub struct Exercises(BTreeMap<String, Box<dyn ReportGenerator>>);
+
+impl Exercises {
+    pub fn insert<T: ReportGenerator + 'static>(
+        &mut self,
+        identifier: impl Into<String>,
+        generator: T,
+    ) -> &mut Self {
+        self.0.insert(identifier.into(), Box::new(generator));
+        self
+    }
+
+    pub fn with<T: ReportGenerator + 'static>(
+        mut self,
+        identifier: impl Into<String>,
+        generator: T,
+    ) -> Self {
+        self.insert(identifier, generator);
+        self
+    }
+    pub fn get(&self, identifier: &str) -> Option<&dyn ReportGenerator> {
+        self.0.get(identifier).map(|a| &**a)
+    }
+    pub fn keys(&self) -> impl ExactSizeIterator<Item = &str> {
+        self.0.keys().map(|x| x.deref())
+    }
+    pub fn iter(&self) -> impl ExactSizeIterator<Item = (&str, &dyn ReportGenerator)> {
+        self.0.iter().map(|(x, y)| (x.deref(), y.deref()))
+    }
+}
+
+impl Debug for Exercises {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "Exercises {{ {} }}",
+            self.0.keys().map(|a| format!("{a:?}: ...")).join(", ")
+        ))
+    }
+}
+
+impl IntoIterator for Exercises {
+    type Item = (String, Box<dyn ReportGenerator>);
+    type IntoIter = std::collections::btree_map::IntoIter<String, Box<dyn ReportGenerator>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl<S: Into<String>> FromIterator<(S, Box<dyn ReportGenerator>)> for Exercises {
+    fn from_iter<T: IntoIterator<Item = (S, Box<dyn ReportGenerator>)>>(iter: T) -> Self {
+        let x = iter.into_iter().map(|(k, v)| (k.into(), v));
+        Self(x.collect())
     }
 }

@@ -4,6 +4,7 @@ pub mod report;
 mod report_creation;
 pub mod simulation;
 
+pub use report_creation::Exercises;
 pub use report_creation::ReportGenerator;
 
 use crate::{

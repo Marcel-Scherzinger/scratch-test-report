@@ -88,10 +88,10 @@ pub trait ReportGenerator {
 }
 
 #[derive(Default)]
-pub struct Exercises(BTreeMap<String, Arc<dyn ReportGenerator>>);
+pub struct Exercises(BTreeMap<String, Arc<dyn ReportGenerator + Send + Sync>>);
 
 impl Exercises {
-    pub fn insert<T: ReportGenerator + 'static>(
+    pub fn insert<T: ReportGenerator + 'static + Send + Sync>(
         &mut self,
         identifier: impl Into<String>,
         generator: T,
@@ -100,7 +100,7 @@ impl Exercises {
         self
     }
 
-    pub fn with<T: ReportGenerator + 'static>(
+    pub fn with<T: ReportGenerator + 'static + Send + Sync>(
         mut self,
         identifier: impl Into<String>,
         generator: T,
@@ -108,17 +108,19 @@ impl Exercises {
         self.insert(identifier, generator);
         self
     }
-    pub fn get(&self, identifier: &str) -> Option<Arc<dyn ReportGenerator>> {
+    pub fn get(&self, identifier: &str) -> Option<Arc<dyn ReportGenerator + Send + Sync>> {
         self.0.get(identifier).cloned()
     }
-    pub fn get_ref(&self, identifier: &str) -> Option<&dyn ReportGenerator> {
+    pub fn get_ref(&self, identifier: &str) -> Option<&(dyn ReportGenerator + Send + Sync)> {
         self.0.get(identifier).map(|a| &**a)
     }
     pub fn keys(&self) -> impl ExactSizeIterator<Item = &str> {
         self.0.keys().map(|x| x.deref())
     }
-    pub fn iter(&self) -> impl ExactSizeIterator<Item = (&str, &dyn ReportGenerator)> {
-        self.0.iter().map(|(x, y)| (x.deref(), y.deref()))
+    pub fn iter(
+        &self,
+    ) -> impl ExactSizeIterator<Item = (&str, &Arc<dyn ReportGenerator + Send + Sync>)> {
+        self.0.iter().map(|(x, y)| (x.deref(), y))
     }
 }
 
@@ -132,16 +134,19 @@ impl Debug for Exercises {
 }
 
 impl IntoIterator for Exercises {
-    type Item = (String, Arc<dyn ReportGenerator>);
-    type IntoIter = std::collections::btree_map::IntoIter<String, Arc<dyn ReportGenerator>>;
+    type Item = (String, Arc<dyn ReportGenerator + Send + Sync>);
+    type IntoIter =
+        std::collections::btree_map::IntoIter<String, Arc<dyn ReportGenerator + Send + Sync>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
     }
 }
 
-impl<S: Into<String>> FromIterator<(S, Arc<dyn ReportGenerator>)> for Exercises {
-    fn from_iter<T: IntoIterator<Item = (S, Arc<dyn ReportGenerator>)>>(iter: T) -> Self {
+impl<S: Into<String>> FromIterator<(S, Arc<dyn ReportGenerator + Send + Sync>)> for Exercises {
+    fn from_iter<T: IntoIterator<Item = (S, Arc<dyn ReportGenerator + Send + Sync>)>>(
+        iter: T,
+    ) -> Self {
         let x = iter.into_iter().map(|(k, v)| (k.into(), v));
         Self(x.collect())
     }

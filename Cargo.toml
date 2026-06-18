@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 derive-getters = "0.5.0"
-derive_more = { version = "2.1.1", features = ["eq"] }
+derive_more = { version = "2.1.1", features = ["debug", "deref", "display", "eq", "from", "into"] }
 either = "1.16.0"
 itertools = "0.14.0"
 log = "0.4.32"
@@ -33,5 +33,5 @@ package = "scratch-test-graph-analysis"
 
 [features]
 serde = ["dep:serde", "svalue/serde", "sinterpreter/serde", "either/serde"]
-schemars = ["dep:schemars", "smodel/schemars"]
-utoipa = ["dep:utoipa", "smodel/utoipa"]
+schemars = ["dep:schemars", "smodel/schemars", "svalue/schemars", "sinterpreter/schemars"]
+utoipa = ["dep:utoipa", "smodel/utoipa", "svalue/utoipa", "sinterpreter/utoipa"]

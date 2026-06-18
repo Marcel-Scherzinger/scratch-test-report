@@ -28,11 +28,20 @@ pub struct Report {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct Formality {
-    #[cfg_attr(feature = "utoipa", schema(value_type= Result<String, InitialBlockAmbiguity>))]
-    initial_block: Result<svalue::ARc<str>, InitialBlockAmbiguity>,
+    #[cfg_attr(feature = "utoipa", schema(value_type= SchemaResult<String, InitialBlockAmbiguity>))]
+    initial_block: Result<smodel::Id, InitialBlockAmbiguity>,
     /// if the block pointers form a cycle (true), the file is malicious or at least invalid
     cyclic_graph: bool,
     max_blocks_exceeded: Option<MaxBlocksExceeded>,
+}
+
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub enum SchemaResult<T, E> {
+    Ok(T),
+    Err(E),
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
@@ -53,7 +62,7 @@ impl MaxBlocksExceeded {
         Self {
             used,
             allowed,
-            msg: Some(Message::error(msg)),
+            msg: Some(Message::error(msg.into())),
         }
     }
     pub fn new(used: usize, allowed: usize) -> Self {

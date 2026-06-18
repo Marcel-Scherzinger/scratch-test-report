@@ -4,6 +4,11 @@ pub mod report;
 mod report_creation;
 pub mod simulation;
 
+use derive_more::Debug;
+use derive_more::Deref;
+use derive_more::Display;
+use derive_more::From;
+use derive_more::Into;
 pub use report_creation::Exercises;
 pub use report_creation::ReportGenerator;
 
@@ -12,7 +17,19 @@ use crate::{
     simulation::{Category, Simulation, TestCase},
 };
 
-pub type Text = std::borrow::Cow<'static, str>;
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Display, PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Deref, From, Into)]
+#[debug("{_0:?}")]
+#[display("{_0}")]
+pub struct Text(std::borrow::Cow<'static, str>);
+
+impl From<String> for Text {
+    fn from(value: String) -> Self {
+        Self(value.into())
+    }
+}
 
 pub mod prelude {
     // make `notify` method available without extra import

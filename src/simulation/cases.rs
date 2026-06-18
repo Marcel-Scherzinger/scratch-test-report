@@ -5,6 +5,7 @@ mod run_analysis;
 use std::collections::BTreeSet;
 
 use derive_getters::Getters;
+use derive_more::From;
 use either::Either;
 use smodel::attrs::{List, Variable};
 use svalue::{SNumber, SValue};
@@ -12,6 +13,7 @@ use svalue::{SNumber, SValue};
 use crate::{
     CaseLevelBMessages,
     messages::{Message, Messages},
+    report::SchemaResult,
     simulation::{
         ActionsState, Simulation, TestCaseStatus, TestCriterion, error_transform::RunningError,
     },
@@ -87,8 +89,30 @@ pub struct TestCaseBuilder<S> {
 
 /// Results of linting that is performed on test case level
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters, Default)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct RunAnalysis {
+    #[cfg_attr(feature = "utoipa", schema(value_type=Alias))]
     hardcoding: Option<Result<(), Message<Simulation>>>,
-    uninitialized_data: BTreeSet<Either<Variable, List>>,
+    uninitialized_data: BTreeSet<VarOrList>,
+}
+type Alias = SchemaResult<(), Message<Simulation>>;
+
+#[derive(Debug, PartialEq, PartialOrd, Eq, Ord, Clone, From)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(tag = "type"))]
+pub enum VarOrList {
+    Var { id: Variable },
+    List { id: List },
+}
+impl From<Either<Variable, List>> for VarOrList {
+    fn from(value: Either<Variable, List>) -> Self {
+        match value {
+            Either::Left(v) => v.into(),
+            Either::Right(v) => v.into(),
+        }
+    }
 }

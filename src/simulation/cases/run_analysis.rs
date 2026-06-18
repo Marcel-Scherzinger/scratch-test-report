@@ -3,7 +3,10 @@ use itertools::Itertools;
 use crate::{
     merge_parts_of_level::MergePartsOfLevel,
     messages::{Message, MessageAdder, Messages},
-    simulation::{Simulation, cases::RunAnalysis},
+    simulation::{
+        Simulation,
+        cases::{RunAnalysis, VarOrList},
+    },
 };
 
 impl RunAnalysis {
@@ -16,7 +19,13 @@ impl RunAnalysis {
         let mut lists = self
             .uninitialized_data()
             .iter()
-            .flat_map(|e| e.as_ref().right().cloned())
+            .flat_map(|e| {
+                if let VarOrList::List { id } = e {
+                    Some(id)
+                } else {
+                    None
+                }
+            })
             .peekable();
         if lists.peek().is_none() {
             return false;
@@ -29,7 +38,13 @@ impl RunAnalysis {
         let mut variables = self
             .uninitialized_data()
             .iter()
-            .flat_map(|e| e.as_ref().left().cloned())
+            .flat_map(|e| {
+                if let VarOrList::Var { id } = e {
+                    Some(id)
+                } else {
+                    None
+                }
+            })
             .peekable();
         if variables.peek().is_none() {
             return false;

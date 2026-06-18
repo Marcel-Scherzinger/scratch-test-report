@@ -139,7 +139,7 @@ impl<S> TestCaseBuilder<S> {
         self
     }
     pub fn uninitialized_usages(&mut self, data: BTreeSet<Either<Variable, List>>) -> &mut Self {
-        self.analysis.uninitialized_data = data;
+        self.analysis.uninitialized_data = data.into_iter().map(|s| s.into()).collect();
         self
     }
     pub fn criterion(&mut self, crit: TestCriterion) -> &mut Self {

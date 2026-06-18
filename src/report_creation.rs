@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, fmt::Debug, ops::Deref};
+use std::{collections::BTreeMap, fmt::Debug, ops::Deref, sync::Arc};
 
 use itertools::Itertools;
 use smodel::{
@@ -88,7 +88,7 @@ pub trait ReportGenerator {
 }
 
 #[derive(Default)]
-pub struct Exercises(BTreeMap<String, Box<dyn ReportGenerator>>);
+pub struct Exercises(BTreeMap<String, Arc<dyn ReportGenerator>>);
 
 impl Exercises {
     pub fn insert<T: ReportGenerator + 'static>(
@@ -96,7 +96,7 @@ impl Exercises {
         identifier: impl Into<String>,
         generator: T,
     ) -> &mut Self {
-        self.0.insert(identifier.into(), Box::new(generator));
+        self.0.insert(identifier.into(), Arc::new(generator));
         self
     }
 
@@ -108,7 +108,10 @@ impl Exercises {
         self.insert(identifier, generator);
         self
     }
-    pub fn get(&self, identifier: &str) -> Option<&dyn ReportGenerator> {
+    pub fn get(&self, identifier: &str) -> Option<Arc<dyn ReportGenerator>> {
+        self.0.get(identifier).cloned()
+    }
+    pub fn get_ref(&self, identifier: &str) -> Option<&dyn ReportGenerator> {
         self.0.get(identifier).map(|a| &**a)
     }
     pub fn keys(&self) -> impl ExactSizeIterator<Item = &str> {
@@ -129,16 +132,16 @@ impl Debug for Exercises {
 }
 
 impl IntoIterator for Exercises {
-    type Item = (String, Box<dyn ReportGenerator>);
-    type IntoIter = std::collections::btree_map::IntoIter<String, Box<dyn ReportGenerator>>;
+    type Item = (String, Arc<dyn ReportGenerator>);
+    type IntoIter = std::collections::btree_map::IntoIter<String, Arc<dyn ReportGenerator>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
     }
 }
 
-impl<S: Into<String>> FromIterator<(S, Box<dyn ReportGenerator>)> for Exercises {
-    fn from_iter<T: IntoIterator<Item = (S, Box<dyn ReportGenerator>)>>(iter: T) -> Self {
+impl<S: Into<String>> FromIterator<(S, Arc<dyn ReportGenerator>)> for Exercises {
+    fn from_iter<T: IntoIterator<Item = (S, Arc<dyn ReportGenerator>)>>(iter: T) -> Self {
         let x = iter.into_iter().map(|(k, v)| (k.into(), v));
         Self(x.collect())
     }

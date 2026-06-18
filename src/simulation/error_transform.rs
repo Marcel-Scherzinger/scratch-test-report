@@ -2,6 +2,8 @@ use sinterpreter::error;
 use sinterpreter::{RunError, default_state::DefaultStateError};
 
 #[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum RunningError {
     // tell that something is wrong with file, log details

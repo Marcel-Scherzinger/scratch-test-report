@@ -8,6 +8,8 @@ use crate::{
 
 /// A report is the top-level data structure for responses when checking programs
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Report {
     /// Messages for the whole report
@@ -21,9 +23,12 @@ pub struct Report {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct Formality {
+    #[cfg_attr(feature = "utoipa", schema(value_type= Result<String, InitialBlockAmbiguity>))]
     initial_block: Result<svalue::ARc<str>, InitialBlockAmbiguity>,
     /// if the block pointers form a cycle (true), the file is malicious or at least invalid
     cyclic_graph: bool,
@@ -31,6 +36,8 @@ pub struct Formality {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct MaxBlocksExceeded {
     used: usize,
@@ -73,6 +80,8 @@ impl Formality {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub enum InitialBlockAmbiguity {

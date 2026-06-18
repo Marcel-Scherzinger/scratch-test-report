@@ -18,6 +18,8 @@ use crate::{
 };
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TestCase {
     /// If the test:

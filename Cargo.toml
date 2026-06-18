@@ -10,6 +10,8 @@ either = "1.16.0"
 itertools = "0.14.0"
 log = "0.4.32"
 pastey = "0.2.3"
+schemars = { version = "1.2.1", optional = true }
+utoipa = { version = "5.5.0", features = ["rc_schema"], optional = true }
 serde = { version = "1.0", features=["derive"], optional = true }
 thiserror = "2.0.18"
 
@@ -31,3 +33,5 @@ package = "scratch-test-graph-analysis"
 
 [features]
 serde = ["dep:serde", "svalue/serde", "sinterpreter/serde", "either/serde"]
+schemars = ["dep:schemars", "smodel/schemars"]
+utoipa = ["dep:utoipa", "smodel/utoipa"]

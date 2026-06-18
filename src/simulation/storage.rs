@@ -6,6 +6,8 @@ use svalue::SValue;
 use crate::Text;
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters, Default)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ActionsState {
     output: Vec<SValue>,
@@ -17,6 +19,8 @@ pub struct ActionsState {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters, Default)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct DataStorage {
     #[cfg_attr(

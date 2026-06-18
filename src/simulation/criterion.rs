@@ -3,6 +3,8 @@ use crate::Text;
 /// Encodes what a test checked and what is the difference between expected and
 /// received results
 #[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case", tag = "type"))]
 #[allow(clippy::enum_variant_names)]

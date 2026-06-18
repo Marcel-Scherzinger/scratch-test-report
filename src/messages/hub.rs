@@ -19,6 +19,8 @@ pub trait MessageAdder<Level> {
 
 /// Collection of multiple messages of a level
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Messages<Level>(BTreeSet<Message<Level>>);
 

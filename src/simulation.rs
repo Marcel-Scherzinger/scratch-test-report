@@ -21,6 +21,8 @@ use crate::{messages::Messages, simulation::cases::RunAnalysis};
 /// Each simulation consists of multiple [categories](Category) that group
 /// similar [`TestCase`]s
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters, Default)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Simulation {
     /// Messages that apply to the whole simulation-part of a report.
@@ -34,6 +36,8 @@ pub struct Simulation {
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Getters)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct CategoryStatus {
@@ -42,6 +46,8 @@ pub struct CategoryStatus {
     failure: usize,
 }
 #[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub enum TestCaseStatus {

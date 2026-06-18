@@ -97,7 +97,8 @@ pub struct RunAnalysis {
     hardcoding: Option<Result<(), Message<Simulation>>>,
     uninitialized_data: BTreeSet<VarOrList>,
 }
-type Alias = SchemaResult<(), Message<Simulation>>;
+#[allow(unused)]
+type Alias = Option<SchemaResult<(), Message<Simulation>>>;
 
 #[derive(Debug, PartialEq, PartialOrd, Eq, Ord, Clone, From)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]

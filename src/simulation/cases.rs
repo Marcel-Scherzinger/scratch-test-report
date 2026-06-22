@@ -23,6 +23,7 @@ use crate::{
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct TestCase {
     /// If the test:
     /// - [succeeded entirely](TestCaseStatus::CompleteSucess)
@@ -92,6 +93,7 @@ pub struct TestCaseBuilder<S> {
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct RunAnalysis {
     #[cfg_attr(feature = "utoipa", schema(value_type=Alias))]
     hardcoding: Option<Result<(), Message<Simulation>>>,

@@ -30,4 +30,3 @@ impl FromIterator<FinishedCaseBuilder> for CategoryBuilder {
         }
     }
 }
-

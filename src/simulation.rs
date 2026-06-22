@@ -29,6 +29,10 @@ pub struct Simulation {
     /// Messages that apply to the whole simulation-part of a report.
     /// This could for example be a missing data structure in the code
     /// or a general issue that was detected by the simulation.
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "crate::is_default")
+    )]
     messages: Messages<Simulation>,
 
     categories: Vec<Category>,

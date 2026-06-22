@@ -1,6 +1,13 @@
 use sinterpreter::default_state::DefaultState;
 
-use crate::simulation::{CaseBuilderUnspecifiedStatus, TestCase, TestCaseBuilder, TestCaseStatus};
+use crate::{
+    messages::{MessageAdder, Messages},
+    report::Report,
+    simulation::{
+        CaseBuilderUnspecifiedStatus, TestCase, TestCaseBuilder, TestCaseStatus,
+        error_transform::RunningErrorMessage,
+    },
+};
 
 impl TestCase {
     pub fn create() -> TestCaseBuilder<CaseBuilderUnspecifiedStatus> {
@@ -19,6 +26,15 @@ impl TestCase {
             phantom: Default::default(),
         }
     }
+
+    pub(crate) fn add_extra_messages(&mut self, report_msgs: &mut Messages<Report>) {
+        match self.error_code.as_ref().map(|e| e.to_message()) {
+            Some(RunningErrorMessage::Report(r)) => report_msgs.notify(r),
+            Some(RunningErrorMessage::Case(c)) => self.messages.notify(c),
+            None => {}
+        }
+    }
+
     pub fn create_from_run_ref(
         run_report: &sinterpreter::Report<'_, DefaultState>,
     ) -> TestCaseBuilder<CaseBuilderUnspecifiedStatus> {

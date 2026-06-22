@@ -1,4 +1,4 @@
-use crate::{merge_parts_of_level::MergePartsOfLevel, messages::MessageAdder};
+use crate::{merge_parts_of_level::MergePartsOfLevel, messages::MessageAdder, report::Report};
 
 use super::*;
 
@@ -23,8 +23,11 @@ impl Simulation {
         self.add_category(category_builder);
         self
     }
-    pub fn verbalize(&mut self) {
-        self.analysis.verbalize_uninitialized(&mut self.messages);
+    pub(crate) fn add_extra_messages(&mut self, report_msgs: &mut Messages<Report>) {
+        for item in self.categories.iter_mut() {
+            item.add_extra_messages(report_msgs, &mut self.messages);
+        }
+        self.analysis.add_extra_messages(&mut self.messages);
     }
 }
 

@@ -1,6 +1,8 @@
 use crate::{
     Text,
     messages::Messages,
+    prelude::Simulation,
+    report::Report,
     simulation::{Category, CategoryBuilder, CategoryStatus, TestCase, TestCaseStatus},
 };
 
@@ -17,6 +19,16 @@ impl Category {
             messages: Default::default(),
             description: None,
             cases: vec![],
+        }
+    }
+
+    pub(crate) fn add_extra_messages(
+        &mut self,
+        report_msgs: &mut Messages<Report>,
+        _simulation_msgs: &mut Messages<Simulation>,
+    ) {
+        for test in self.cases.iter_mut() {
+            test.add_extra_messages(report_msgs);
         }
     }
 

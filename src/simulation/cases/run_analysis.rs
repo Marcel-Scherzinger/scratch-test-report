@@ -10,7 +10,11 @@ use crate::{
 };
 
 impl RunAnalysis {
-    pub(crate) fn verbalize_uninitialized(&self, msgs: &mut Messages<Simulation>) {
+    pub(crate) fn add_extra_messages(&self, msgs: &mut Messages<Simulation>) {
+        self.verbalize_uninitialized(msgs);
+    }
+
+    fn verbalize_uninitialized(&self, msgs: &mut Messages<Simulation>) {
         self.verbalize_uninitialized_lists(msgs);
         self.verbalize_uninitialized_variables(msgs);
     }

@@ -12,6 +12,9 @@ use crate::{
 impl RunAnalysis {
     pub(crate) fn add_extra_messages(&self, msgs: &mut Messages<Simulation>) {
         self.verbalize_uninitialized(msgs);
+        if let Some(Err(hardcoding)) = self.hardcoding.as_ref() {
+            msgs.notify(hardcoding.clone());
+        }
     }
 
     fn verbalize_uninitialized(&self, msgs: &mut Messages<Simulation>) {

@@ -43,7 +43,7 @@ impl schemars::JsonSchema for SString {
 ///
 /// Next to [`Self::new`] and [`Self::cnew`] (for const) there
 /// are also utility constructors for every kind.
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -117,3 +117,15 @@ impl<Level> Ord for Message<Level> {
             .then(self.msg().cmp(other.msg()))
     }
 }
+
+impl<Level> Clone for Message<Level> {
+    fn clone(&self) -> Self {
+        Self {
+            kind: self.kind,
+            msg: self.msg.clone(),
+            phantom: self.phantom,
+        }
+    }
+}
+
+impl<Level> implicit_clone::ImplicitClone for Message<Level> {}

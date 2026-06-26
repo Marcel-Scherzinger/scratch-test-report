@@ -110,7 +110,7 @@ impl MaxBlocksExceeded {
         Self {
             used,
             allowed,
-            msg: Some(Message::warning(msg.into())),
+            msg: Some(Message::warning(msg.into().0)),
         }
     }
     pub fn new(used: usize, allowed: usize) -> Self {

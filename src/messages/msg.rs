@@ -1,6 +1,9 @@
-use std::borrow::Cow;
+use derive_more::{Deref, Eq, PartialEq};
 
-use derive_more::{Eq, PartialEq};
+#[cfg(not(feature = "thread-share"))]
+use implicit_clone::sync::IString;
+#[cfg(feature = "thread-share")]
+use implicit_clone::unsync::IString;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
@@ -11,6 +14,20 @@ pub enum MessageKind {
     Info,
     Warning,
     Error,
+}
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Deref)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+struct SString(IString);
+
+#[cfg(feature = "schemars")]
+impl schemars::JsonSchema for SString {
+    fn schema_name() -> std::borrow::Cow<'static, str> {
+        String::schema_name()
+    }
+    fn json_schema(x: &mut schemars::SchemaGenerator) -> schemars::Schema {
+        String::json_schema(x)
+    }
 }
 
 /// Represents a general purpose message that the application can
@@ -32,23 +49,24 @@ pub enum MessageKind {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Message<Level> {
     kind: MessageKind,
-    msg: Cow<'static, str>,
+    #[cfg_attr(feature = "utoipa", schema(value_type=String))]
+    msg: SString,
     #[cfg_attr(feature = "serde", serde(skip))]
     phantom: std::marker::PhantomData<Level>,
 }
 
 impl<Level> Message<Level> {
-    pub fn new(kind: MessageKind, msg: impl Into<Cow<'static, str>>) -> Self {
+    pub fn new(kind: MessageKind, msg: impl Into<IString>) -> Self {
         Self {
             kind,
-            msg: msg.into(),
+            msg: SString(msg.into()),
             phantom: std::marker::PhantomData {},
         }
     }
     pub const fn cnew(kind: MessageKind, msg: &'static str) -> Self {
         Self {
             kind,
-            msg: Cow::Borrowed(msg),
+            msg: SString(IString::Static(msg)),
             phantom: std::marker::PhantomData {},
         }
     }
@@ -62,13 +80,13 @@ impl<Level> Message<Level> {
         Self::cnew(MessageKind::Error, msg)
     }
 
-    pub fn info(msg: impl Into<Cow<'static, str>>) -> Self {
+    pub fn info(msg: impl Into<IString>) -> Self {
         Self::new(MessageKind::Info, msg)
     }
-    pub fn warning(msg: impl Into<Cow<'static, str>>) -> Self {
+    pub fn warning(msg: impl Into<IString>) -> Self {
         Self::new(MessageKind::Warning, msg)
     }
-    pub fn error(msg: impl Into<Cow<'static, str>>) -> Self {
+    pub fn error(msg: impl Into<IString>) -> Self {
         Self::new(MessageKind::Error, msg)
     }
 

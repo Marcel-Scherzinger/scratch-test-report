@@ -5,14 +5,17 @@ use implicit_clone::sync::IString;
 #[cfg(feature = "thread-share")]
 use implicit_clone::unsync::IString;
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy, derive_more::Display)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub enum MessageKind {
+    #[display("info")]
     Info,
+    #[display("warning")]
     Warning,
+    #[display("error")]
     Error,
 }
 

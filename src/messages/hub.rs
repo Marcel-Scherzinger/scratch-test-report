@@ -56,6 +56,12 @@ impl<Level> Extend<Message<Level>> for Messages<Level> {
     }
 }
 
+impl<Level> FromIterator<Message<Level>> for Messages<Level> {
+    fn from_iter<T: IntoIterator<Item = Message<Level>>>(iter: T) -> Self {
+        Self(iter.into_iter().collect())
+    }
+}
+
 impl<Level> IntoIterator for Messages<Level> {
     type Item = Message<Level>;
     type IntoIter = <BTreeSet<Message<Level>> as IntoIterator>::IntoIter;

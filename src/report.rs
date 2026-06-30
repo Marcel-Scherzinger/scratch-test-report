@@ -28,6 +28,14 @@ pub struct Report {
     contains_extra_messages: bool,
 }
 impl Report {
+    pub fn limit_tests_per_category(&mut self) {
+        if let Some(sim) = self.simulation.as_mut() {
+            for category in sim.categories.iter_mut() {
+                category.limit_tests();
+            }
+        }
+    }
+
     /// Adds extra messages by computing them from structured information.
     /// Those are good for humans to read but the user good also get information
     /// by explicitly showing information for the structures.

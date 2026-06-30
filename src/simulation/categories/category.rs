@@ -6,7 +6,50 @@ use crate::{
     simulation::{Category, CategoryBuilder, CategoryStatus, TestCase, TestCaseStatus},
 };
 
+impl CategoryStatus {
+    pub(crate) fn total_count(&self) -> usize {
+        self.failure() + self.success_but_warnings() + self.complete_success()
+    }
+}
+
 impl Category {
+    pub(crate) fn limit_tests(&mut self) {
+        if self.status.total_count() > 30 {
+            let mut failures_to_remove = self.status().failure().saturating_sub(10);
+            let mut warnings_to_remove = self.status().success_but_warnings().saturating_sub(10);
+            let mut ok_to_remove = self.status().complete_success().saturating_sub(10);
+
+            // TODO: it can happen that test count < 30 if not all categories occur
+
+            let cases: Vec<TestCase> = std::mem::take(&mut self.cases);
+            for case in cases.into_iter().rev() {
+                match case.status() {
+                    TestCaseStatus::Failure => {
+                        if failures_to_remove == 0 {
+                            self.cases.push(case);
+                        } else {
+                            failures_to_remove -= 1;
+                        }
+                    }
+                    TestCaseStatus::SuccessButWarnings => {
+                        if warnings_to_remove == 0 {
+                            self.cases.push(case);
+                        } else {
+                            warnings_to_remove -= 1;
+                        }
+                    }
+                    TestCaseStatus::CompleteSucess => {
+                        if ok_to_remove == 0 {
+                            self.cases.push(case);
+                        } else {
+                            ok_to_remove -= 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     pub fn create_with_desc(description: impl Into<Text>) -> CategoryBuilder {
         CategoryBuilder {
             messages: Default::default(),

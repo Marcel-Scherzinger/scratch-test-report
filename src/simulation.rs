@@ -35,7 +35,7 @@ pub struct Simulation {
     )]
     messages: Messages<Simulation>,
 
-    categories: Vec<Category>,
+    pub(crate) categories: Vec<Category>,
 
     analysis: RunAnalysis,
 }

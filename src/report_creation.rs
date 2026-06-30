@@ -49,17 +49,32 @@ pub trait ReportGenerator {
 
     fn create_formality<'a>(&self, doc: &'a ProjectDoc) -> (Option<&'a smodel::Id>, Formality) {
         let initial_block = self.form_find_initial_block(doc);
-        let cyclic_graph = self.form_is_cyclic_graph(doc);
+        let graph = sgraph::BlockGraph::new(doc);
+        let cyclic_graph = self.form_is_cyclic_graph(&graph);
         let block_ref = initial_block.clone().ok();
         let max_total_blocks = self.form_check_max_total_blocks(doc);
+        let uses_length_of_conc_list = self.form_uses_length_of_concatenated_list(&graph);
         (
             block_ref,
-            Formality::new(initial_block.cloned(), cyclic_graph, max_total_blocks),
+            Formality::new(
+                initial_block.cloned(),
+                uses_length_of_conc_list,
+                cyclic_graph,
+                max_total_blocks,
+            ),
         )
     }
 
-    fn form_is_cyclic_graph(&self, doc: &ProjectDoc) -> bool {
-        if let Err(err) = sgraph::BlockGraph::new(doc).check_no_cycles_in_next_or_param_edges() {
+    fn form_uses_length_of_concatenated_list(&self, graph: &sgraph::BlockGraph) -> bool {
+        graph
+            .blocks_directly_reading_list_item_concatenation()
+            .flatten()
+            .next()
+            .is_some()
+    }
+
+    fn form_is_cyclic_graph(&self, graph: &sgraph::BlockGraph) -> bool {
+        if let Err(err) = graph.check_no_cycles_in_next_or_param_edges() {
             log::warn!("[report/form] submission has cyclic graph: {err}");
             true
         } else {

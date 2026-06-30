@@ -57,6 +57,11 @@ impl Report {
             if *form.cyclic_graph() {
                 self.messages.notify(PROGRAM_GRAPH_CYCLIC);
             }
+            if *form.uses_length_of_concatenated_list() {
+                self.messages.notify(Message::warning(
+                    "Ihr Programm benutzt einen grünen \"Länge von ...\"-Block, wobei das Argument ein roter Listenblock ist. Das ist sehr wahrscheinlich nicht das, was Sie eigentlich wollten. Sie sollten den roten \"Länge von (Listenname)\"-Block benutzen. So wie es bei Ihnen ist, werden alle Elemente der Liste mit Leerzeichen getrennt aneinander gehängt und dann werden die Zeichen gezählt. Wenn das wirklich das ist was Sie wollten, können Sie diese Warnung ignorieren."
+                ));
+            }
             if let Some(exceeded) = form.max_blocks_exceeded() {
                 self.messages.notify(Message::warning(format!("Ihr Programm benutzt sehr viele Blöcke. Die Aufgabensteller sehen maximal {} vor, Ihr Programm nutzt jedoch {}. Die Tutoren werden dafür sehr wahrscheinlich keinen Punktabzug geben, es zeigt aber, dass Sie Ihr Programm noch anpassen sollten, da die Begrenzungen eigentlich sehr großzügig gesetzt sind. (Ich zähle auch die Blöcke, die in der Datei sind und nicht benutzt werden)", exceeded.allowed, exceeded.used)));
                 if let Some(msg) = exceeded.msg() {
@@ -80,6 +85,7 @@ impl Report {
 pub struct Formality {
     #[cfg_attr(feature = "utoipa", schema(value_type= SchemaResult<String, InitialBlockAmbiguity>))]
     initial_block: Result<smodel::Id, InitialBlockAmbiguity>,
+    uses_length_of_concatenated_list: bool,
     /// if the block pointers form a cycle (true), the file is malicious or at least invalid
     cyclic_graph: bool,
     max_blocks_exceeded: Option<MaxBlocksExceeded>,
@@ -133,11 +139,13 @@ impl MaxBlocksExceeded {
 impl Formality {
     pub fn new(
         initial_block: Result<svalue::ARc<str>, InitialBlockAmbiguity>,
+        uses_length_of_concatenated_list: bool,
         cyclic_graph: bool,
         max_blocks_exceeded: Result<(), MaxBlocksExceeded>,
     ) -> Self {
         Self {
             initial_block,
+            uses_length_of_concatenated_list,
             cyclic_graph,
             max_blocks_exceeded: max_blocks_exceeded.err(),
         }

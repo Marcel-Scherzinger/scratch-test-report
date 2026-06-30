@@ -7,6 +7,10 @@ use crate::{
 };
 
 impl CategoryBuilder {
+    pub fn title(&mut self, title: impl Into<Text>) -> &mut Self {
+        self.title = Some(title.into());
+        self
+    }
     pub fn description(&mut self, description: impl Into<Text>) -> &mut Self {
         self.description = Some(description.into());
         self
@@ -23,7 +27,7 @@ impl CategoryBuilder {
             .into_iter()
             .reduce(MergePartsOfLevel::merge_parts)
             .unwrap_or_default();
-        let cat = Category::compute_from(self.description, messages.0, cases);
+        let cat = Category::compute_from(self.title, self.description, messages.0, cases);
 
         let extra = extras.into_iter().reduce(MergePartsOfLevel::merge_parts);
         (cat, messages.1, extra)

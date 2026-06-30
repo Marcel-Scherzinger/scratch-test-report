@@ -16,6 +16,8 @@ use crate::{
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
 pub struct Category {
+    /// An optional _short_ title describing the category
+    title: Option<Text>,
     /// An optional description giving a hint on what the contained
     /// test cases have in common i. e. what property they test
     description: Option<Text>,
@@ -34,6 +36,7 @@ pub struct Category {
     // randoms: Option<Vec<svalue::SNumber>>,
 }
 pub struct CategoryBuilder {
+    title: Option<Text>,
     messages: CategoryBLevelMessages,
     description: Option<Text>,
     cases: Vec<FinishedCaseBuilder>,

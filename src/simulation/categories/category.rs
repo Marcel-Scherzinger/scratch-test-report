@@ -50,8 +50,17 @@ impl Category {
         }
     }
 
+    pub fn create_with_title(title: impl Into<Text>) -> CategoryBuilder {
+        CategoryBuilder {
+            title: Some(title.into()),
+            messages: Default::default(),
+            description: None,
+            cases: vec![],
+        }
+    }
     pub fn create_with_desc(description: impl Into<Text>) -> CategoryBuilder {
         CategoryBuilder {
+            title: None,
             messages: Default::default(),
             description: Some(description.into()),
             cases: vec![],
@@ -59,6 +68,7 @@ impl Category {
     }
     pub fn create() -> CategoryBuilder {
         CategoryBuilder {
+            title: None,
             messages: Default::default(),
             description: None,
             cases: vec![],
@@ -76,11 +86,13 @@ impl Category {
     }
 
     pub fn compute_from(
+        title: Option<impl Into<Text>>,
         description: Option<impl Into<Text>>,
         messages: Messages<Category>,
         cases: Vec<TestCase>,
     ) -> Category {
         let description = description.map(Into::into);
+        let title = title.map(Into::into);
         let (mut success, mut with_warn, mut fail) = (0, 0, 0);
 
         for case in cases.iter() {
@@ -92,6 +104,7 @@ impl Category {
         }
 
         Category {
+            title,
             description,
             status: CategoryStatus {
                 complete_success: success,

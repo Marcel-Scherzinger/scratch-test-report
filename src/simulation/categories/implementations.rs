@@ -24,6 +24,7 @@ impl Extend<FinishedCaseBuilder> for CategoryBuilder {
 impl FromIterator<FinishedCaseBuilder> for CategoryBuilder {
     fn from_iter<T: IntoIterator<Item = FinishedCaseBuilder>>(iter: T) -> Self {
         Self {
+            title: None,
             messages: Default::default(),
             description: None,
             cases: iter.into_iter().collect(),

@@ -3,6 +3,7 @@ pub mod messages;
 pub mod report;
 mod report_creation;
 pub mod simulation;
+pub mod utils;
 
 use derive_more::Debug;
 use derive_more::Deref;

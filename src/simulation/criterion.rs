@@ -44,6 +44,34 @@ pub enum TestCriterion {
         /// None if there is no output
         received_contains: Option<bool>,
     },
+
+    LastOutputContainsNumber {
+        /// One example that contains the expected content.
+        /// This can be shown to the user for comparison
+        sample_expected: Text,
+        /// The number, the test expected to see
+        expected: svalue::SNumber,
+        /// The numbers that were found in the output
+        found_numbers: Vec<svalue::SNumber>,
+
+        /// If the received output contains the number anywhere,
+        /// it is OK if there are other numbers as well
+        received_contains: Option<bool>,
+    },
+
+    LastOutputContainsOnlyThisNumber {
+        /// One example that contains the expected content.
+        /// This can be shown to the user for comparison
+        sample_expected: Text,
+        /// The number, the test expected to see
+        expected: svalue::SNumber,
+        /// The numbers that were found in the output
+        found_numbers: Vec<svalue::SNumber>,
+
+        /// If the received output contains the number anywhere
+        /// AND it is the only number in the text
+        received_contains_only_this: Option<bool>,
+    },
 }
 
 impl TestCriterion {
@@ -59,6 +87,14 @@ impl TestCriterion {
             }
             | Self::LastOutputInterpreted {
                 interpretations_match: happy,
+                ..
+            }
+            | Self::LastOutputContainsNumber {
+                received_contains: happy,
+                ..
+            }
+            | Self::LastOutputContainsOnlyThisNumber {
+                received_contains_only_this: happy,
                 ..
             } => happy.unwrap_or(false),
         }

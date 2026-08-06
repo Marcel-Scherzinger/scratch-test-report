@@ -63,7 +63,7 @@ impl Report {
                 ));
             }
             if let Some(exceeded) = form.max_blocks_exceeded() {
-                self.messages.notify(Message::warning(format!("Ihr Programm benutzt sehr viele Blöcke. Die Aufgabensteller sehen maximal {} vor, Ihr Programm nutzt jedoch {}. Die Tutoren werden dafür sehr wahrscheinlich keinen Punktabzug geben, es zeigt aber, dass Sie Ihr Programm noch anpassen sollten, da die Begrenzungen eigentlich sehr großzügig gesetzt sind. (Ich zähle auch die Blöcke, die in der Datei sind und nicht benutzt werden)", exceeded.allowed, exceeded.used)));
+                self.messages.notify(Message::warning(format!("Ihr Programm benutzt sehr viele Blöcke. Die Aufgabensteller sehen maximal {} vor, Ihr Programm nutzt jedoch {}. Die Tutoren werden dafür sehr wahrscheinlich keinen Punktabzug geben. Es zeigt aber, dass Sie Ihr Programm noch anpassen sollten, da die Begrenzungen eigentlich sehr großzügig gesetzt sind. Es könnte aber auch sein, dass Sie mehr Fälle abdecken, als in der Aufgabe verlangt wird. In diesem Fall finde ich es vollkommen in Ordnung und sogar toll, dass Sie mehr Blöcke benutzt haben und Sie können es dann gerne so lassen. (Ich zähle auch die Blöcke, die in der Datei sind und nicht benutzt werden)", exceeded.allowed, exceeded.used)));
                 if let Some(msg) = exceeded.msg() {
                     // Change level from Formality to Report
                     // Exercise creators need to ensure that this message isn't redundant

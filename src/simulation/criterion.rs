@@ -79,6 +79,7 @@ pub enum TestCriterion {
     ListExactlyEqual {
         list_name: Text,
         expected: Vec<Text>,
+        found: Vec<Text>,
         problem: Option<ListEqualityProblem>,
     },
 }

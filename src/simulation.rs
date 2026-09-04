@@ -7,7 +7,7 @@ mod storage;
 
 pub use cases::{CaseBuilderStatusSet, CaseBuilderUnspecifiedStatus, TestCase, TestCaseBuilder};
 pub use categories::{Category, CategoryBuilder};
-pub use criterion::TestCriterion;
+pub use criterion::{ListEqualityProblem, TestCriterion};
 pub use error_transform::RunningError;
 pub use storage::{ActionsState, DataStorage};
 

@@ -45,6 +45,7 @@ pub enum TestCriterion {
         received_contains: Option<bool>,
     },
 
+    #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
     LastOutputContainsNumber {
         /// One example that contains the expected content.
         /// This can be shown to the user for comparison
@@ -59,6 +60,7 @@ pub enum TestCriterion {
         received_contains: Option<bool>,
     },
 
+    #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
     LastOutputContainsOnlyThisNumber {
         /// One example that contains the expected content.
         /// This can be shown to the user for comparison
@@ -72,6 +74,24 @@ pub enum TestCriterion {
         /// AND it is the only number in the text
         received_contains_only_this: Option<bool>,
     },
+
+    #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
+    ListExactlyEqual {
+        list_name: Text,
+        expected: Vec<Text>,
+        problem: Option<ListEqualityProblem>,
+    },
+}
+
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
+pub enum ListEqualityProblem {
+    ListNotFound,
+    ItemDifferent,
+    LengthsDifferent,
 }
 
 impl TestCriterion {
@@ -97,6 +117,7 @@ impl TestCriterion {
                 received_contains_only_this: happy,
                 ..
             } => happy.unwrap_or(false),
+            Self::ListExactlyEqual { problem, .. } => problem.is_none(),
         }
     }
 }

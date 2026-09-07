@@ -82,6 +82,9 @@ pub enum TestCriterion {
         found: Vec<Text>,
         problem: Option<ListEqualityProblem>,
     },
+    /// The submission sent an error message that will explain everything
+    #[cfg_attr(feature = "serde", serde(rename_all = "kebab-case"))]
+    ErrorMessage {},
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone)]

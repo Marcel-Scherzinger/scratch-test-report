@@ -101,6 +101,7 @@ pub enum ListEqualityProblem {
 impl TestCriterion {
     pub fn is_successful(&self) -> bool {
         match self {
+            Self::Message { happy } => *happy,
             Self::LastOutputExact {
                 output_matches: happy,
                 ..

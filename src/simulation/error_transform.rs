@@ -1,3 +1,4 @@
+use either::Either;
 use sinterpreter::error;
 use sinterpreter::{RunError, default_state::DefaultStateError};
 
@@ -75,6 +76,15 @@ impl RunningError {
                 ),
             }),
             Self::State(error) => match error {
+                DefaultStateError::IncompatibleRandomRequested { predefined, range } => {
+                    let r = match range {
+                        Either::Left((a, b)) => format!("{a} bis {b}, ganze Zahlen"),
+                        Either::Right((a, b)) => format!("{a} bis {b}, Kommazahlen"),
+                    };
+                    RunningErrorMessage::Case(Message::error(format!(
+                        "Ihr Programm hat einen Zufallszahlenbereich angefragt ({r}), der nicht zu dem vordefinierten Wert ({predefined}) passt, der bereitgestellt wurde"
+                    )))
+                }
                 DefaultStateError::NoMoreAnswers => RunningErrorMessage::Case(Message::error(
                     "Ihr Programm hat mehr Fragen gestellt, als die Fragensteller für diese Aufgabe Antworten zur Verfügung stellen. Vielleicht haben Sie die Aufgabenstellung falsch verstanden?",
                 )),

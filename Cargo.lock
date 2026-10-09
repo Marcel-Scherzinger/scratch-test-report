@@ -316,7 +316,7 @@ dependencies = [
 [[package]]
 name = "scratch-test-interpreter"
 version = "0.1.0"
-source = "git+https://github.com/Marcel-Scherzinger/scratch-test-interpreter#07ef4d7b852342e8d5836e538098a22c238a9581"
+source = "git+https://github.com/Marcel-Scherzinger/scratch-test-interpreter#0402c262f23bcff3a63d874d4588fe94701c523f"
 dependencies = [
  "derive-getters",
  "either",
